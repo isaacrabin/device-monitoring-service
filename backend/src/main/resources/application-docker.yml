@@ -2,6 +2,11 @@ spring:
   application:
     name: "device-monitoring-service"
 
+  app:
+    jwt:
+      secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+      expiration: ${JWT_EXPIRATION:86400000}  # 24 hours
+
   datasource:
     url: jdbc:postgresql://postgres:5432/device_monitoring
     username: postgres
@@ -36,7 +41,10 @@ spring:
     default-property-inclusion: non_null
 
 server:
-  port: 8080
+  port: ${PORT:8080}
+  error:
+    include-message: never
+    include-binding-errors: never
 
 logging:
   level:
@@ -44,6 +52,24 @@ logging:
     org.flywaydb: DEBUG
     org.springframework.web: INFO
     org.hibernate: WARN
+    org.springframework.security: DEBUG  # Add this for security debugging
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,info,flyway
+  endpoint:
+    health:
+      show-details: always
+    flyway:
+      enabled: true
+
+monitoring:
+  staleness:
+    threshold-minutes: 15
 
 resilience4j:
   circuitbreaker:
