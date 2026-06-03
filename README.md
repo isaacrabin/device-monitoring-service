@@ -20,8 +20,8 @@ That's it. You do **not** need Java, Maven, or Node.js installed locally.
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/isaacrabin/device-monitoring-service.git
-cd device-monitoring-service
+git clone https://github.com/isaacrabin/device-monitoring-service_BCS.git
+cd device-monitoring-service_BCS
 ```
 
 ### 2. Build and start all services
