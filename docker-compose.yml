@@ -1,24 +1,24 @@
 services:
   postgres:
-    image: postgres:15-alpine
-    container_name: device-monitoring-postgres
-    environment:
-      POSTGRES_DB: device_monitoring
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d device_monitoring"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - monitoring-network
-    restart: unless-stopped
-
+      image: postgres:15-alpine
+      container_name: device-monitoring-postgres
+      environment:
+        POSTGRES_DB: device_monitoring
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: password
+      ports:
+        - "5432:5432"
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U postgres -d device_monitoring"]
+        interval: 5s
+        timeout: 5s
+        retries: 10
+        start_period: 10s
+      networks:
+        - monitoring-network
+      restart: unless-stopped
   backend:
     build:
       context: ./backend

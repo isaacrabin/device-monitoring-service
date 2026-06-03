@@ -2,11 +2,16 @@ spring:
   application:
     name: "device-monitoring-service"
 
-
   datasource:
     url: jdbc:postgresql://postgres:5432/device_monitoring
     username: postgres
     password: password
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 60000
+      initialization-fail-timeout: 60000
+      keepalive-time: 30000
 
   jpa:
     hibernate:
@@ -50,7 +55,6 @@ resilience4j:
         wait-duration-in-open-state: 30s
         permitted-number-of-calls-in-half-open-state: 3
         automatic-transition-from-open-to-half-open-enabled: true
-
   retry:
     instances:
       deviceService:
@@ -59,20 +63,17 @@ resilience4j:
         retry-exceptions:
           - org.springframework.dao.DataAccessException
           - java.net.SocketTimeoutException
-
   bulkhead:
     instances:
       deviceService:
         max-concurrent-calls: 20
         max-wait-duration: 10ms
-
   thread-pool-bulkhead:
     instances:
       deviceService:
         max-thread-pool-size: 10
         core-thread-pool-size: 5
         queue-capacity: 20
-
   timelimiter:
     instances:
       deviceService:
