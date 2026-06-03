@@ -5,7 +5,6 @@ import { useAuth } from '@/app/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, LogIn, Shield, Wifi, Zap, Network } from 'lucide-react';
 import Image from 'next/image';
-import Logo from '@/app/components/Logo';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -28,7 +27,10 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await login(username, password);
+      await login(
+        username.trim(),
+        password.trim()
+      );
     } catch (err: any) {
       setError(err.message || 'Invalid username or password');
     } finally {
@@ -55,12 +57,13 @@ export default function LoginPage() {
         <div className="max-w-md w-full">
           {/* Logo/Brand Section */}
           <div className="text-center mb-8 animate-fade-in">
+            
             <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-primary-dark rounded-2xl mb-6 shadow-lg">
-              <Logo />
+              <Shield size={40} className="text-white" />
             </div>
 
             <h1 className="text-4xl font-bold mb-2">
-              <span className="gradient-text">Network Monitor</span>
+              <span className="gradient-text">BCS Network Monitor</span>
             </h1>
           </div>
 
