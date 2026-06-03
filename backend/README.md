@@ -23,8 +23,8 @@ A container-ready Spring Boot application for monitoring and managing devices, b
 ## 1. Clone the repository
 
 ```bash
-git clone https://github.com/<your-username>/device-monitoring-service.git
-cd device-monitoring-service
+git clone https://github.com/isaacrabin/device-monitoring-service_BCS.git
+cd device-monitoring-service_BCS
 ---
 
 ## 2. Start PostgreSQL using Docker
