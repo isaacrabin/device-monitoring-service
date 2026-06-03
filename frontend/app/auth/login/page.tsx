@@ -5,6 +5,7 @@ import { useAuth } from '@/app/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, LogIn, Shield, Wifi, Zap, Network } from 'lucide-react';
 import Image from 'next/image';
+import Logo from '@/app/components/Logo';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -55,14 +56,7 @@ export default function LoginPage() {
           {/* Logo/Brand Section */}
           <div className="text-center mb-8 animate-fade-in">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-primary-dark rounded-2xl mb-6 shadow-lg">
-              <Image
-                src="/BCS_LOGO.webp"
-                alt="Logo"
-                width={60}
-                height={60}
-                className="object-contain"
-                priority
-              />
+              <Logo />
             </div>
 
             <h1 className="text-4xl font-bold mb-2">
@@ -183,7 +177,7 @@ export default function LoginPage() {
           {/* Footer */}
           <div className="text-center mt-8">
             <p className="text-xs text-gray-600">
-              &copy; 2026 Network Device Monitor. All rights reserved.
+              &copy; 2026 Isaac Rabin. All rights reserved.
             </p>
           </div>
         </div>

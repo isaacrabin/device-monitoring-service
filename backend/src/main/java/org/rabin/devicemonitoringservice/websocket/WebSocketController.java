@@ -26,4 +26,12 @@ public class WebSocketController {
         log.debug("Broadcasting device registration via WebSocket: {}", device.getName());
         return device;
     }
+
+    // Endpoint for clients to request stale device list
+    @MessageMapping("/device.stale-request")
+    @SendTo("/topic/stale-devices")
+    public String requestStaleDevices() {
+        log.debug("Client requested stale devices list");
+        return "STALE_DEVICES_REQUEST";
+    }
 }

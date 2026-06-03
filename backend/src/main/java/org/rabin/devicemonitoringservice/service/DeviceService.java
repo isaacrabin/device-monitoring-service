@@ -24,6 +24,7 @@ import org.rabin.devicemonitoringservice.repository.StatusReportRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +40,7 @@ public class DeviceService {
 
     private final DeviceRepository deviceRepository;
     private final StatusReportRepository statusReportRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Value("${monitoring.staleness.threshold-minutes:15}")
     private int stalenessThresholdMinutes;
@@ -68,7 +70,13 @@ public class DeviceService {
         Device savedDevice = deviceRepository.save(device);
         log.info("Device registered successfully id={}", savedDevice.getId());
 
-        return convertToDto(savedDevice);
+        DeviceDto savedDeviceDto = convertToDto(savedDevice);
+
+        // WEBSOCKET BROADCAST FOR DEVICE REGISTRATION
+        messagingTemplate.convertAndSend("/topic/device-registrations", savedDeviceDto);
+        log.debug("Broadcasted device registration via WebSocket: {}", savedDeviceDto.getName());
+
+        return savedDeviceDto;
     }
 
 
@@ -109,11 +117,21 @@ public class DeviceService {
 
         statusReportRepository.save(report);
 
-        // Denormalise latest status onto the device row for fast list queries
         device.setLastStatus(request.getStatus());
         device.setLastReportTimestamp(now);
         device.setLastDiagnosticMessage(request.getDiagnosticMessage());
         deviceRepository.save(device);
+
+        // WEBSOCKET BROADCAST FOR STATUS REPORT
+        StatusReportDto reportDto = convertToDto(report);
+        messagingTemplate.convertAndSend("/topic/status-updates", reportDto);
+        log.debug("Broadcasted status report via WebSocket for deviceId={}, status={}", deviceId, request.getStatus());
+
+        // ADD WEBSOCKET BROADCAST FOR DEVICE STATUS CHANGE
+        DeviceDto deviceDto = convertToDto(device);
+        deviceDto.setIsStale(isDeviceStale(device, Instant.now().minusSeconds(stalenessThresholdMinutes * 60L)));
+        messagingTemplate.convertAndSend("/topic/device-status-changes", deviceDto);
+        log.debug("Broadcasted device status change via WebSocket for deviceId={}", deviceId);
 
         if (request.getStatus() == DeviceStatus.OFFLINE
                 || request.getStatus() == DeviceStatus.DEGRADED) {
@@ -123,7 +141,7 @@ public class DeviceService {
             log.info("Status report saved deviceId={} status={}", deviceId, request.getStatus());
         }
 
-        return convertToDto(report);
+        return reportDto;
     }
 
 

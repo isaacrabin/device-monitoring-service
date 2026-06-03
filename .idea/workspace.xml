@@ -5,17 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a9426489-5bd2-494a-97a5-f64e81b43094" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/org/rabin/devicemonitoringservice/controller/AuthController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/org/rabin/devicemonitoringservice/dto/AuthDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/org/rabin/devicemonitoringservice/service/AuthService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/org/rabin/devicemonitoringservice/service/CustomUserDetailsService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/test/java/org/rabin/devicemonitoringservice/service/StatusReportWebSocketIntegrationTest.java" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/frontend/app/types/index.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/rabin/devicemonitoringservice/config/JwtAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/rabin/devicemonitoringservice/config/JwtAuthenticationFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/rabin/devicemonitoringservice/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/rabin/devicemonitoringservice/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application-docker.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application-docker.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/db/migration/V4__create_user_table.sql" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/db/migration/V4__create_user_table.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/rabin/devicemonitoringservice/config/WebSocketConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/rabin/devicemonitoringservice/config/WebSocketConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/rabin/devicemonitoringservice/service/DeviceService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/rabin/devicemonitoringservice/service/DeviceService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/rabin/devicemonitoringservice/websocket/WebSocketController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/rabin/devicemonitoringservice/websocket/WebSocketController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend" beforeDir="false" afterPath="$PROJECT_DIR$/frontend" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/CLAUDE.md" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/globals.css" afterDir="false" />
