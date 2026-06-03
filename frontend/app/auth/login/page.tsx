@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/app/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, LogIn, Shield, Wifi, Zap, Network } from 'lucide-react';
+import Image from 'next/image';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -54,14 +55,19 @@ export default function LoginPage() {
           {/* Logo/Brand Section */}
           <div className="text-center mb-8 animate-fade-in">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-primary-dark rounded-2xl mb-6 shadow-lg">
-              <Shield size={40} className="text-white" />
+              <Image
+                src="/BCS_LOGO.webp"
+                alt="Logo"
+                width={60}
+                height={60}
+                className="object-contain"
+                priority
+              />
             </div>
+
             <h1 className="text-4xl font-bold mb-2">
               <span className="gradient-text">Network Monitor</span>
             </h1>
-            <p className="text-gray-500">
-              Enterprise Device Monitoring Platform
-            </p>
           </div>
 
           {/* Login Card */}
@@ -143,7 +149,7 @@ export default function LoginPage() {
             {/* Demo Credentials */}
             <div className="mt-6 pt-4 text-center border-t border-gray-800">
                 <p className="text-xs text-gray-500">
-                    Demo Credentials: Username:<span className="text-primary"> admin</span> Password: <span className="text-primary">admin123</span>
+                    <strong>Demo Credentials:</strong> Username:<span className="text-primary"> admin</span> Password: <span className="text-primary">admin123</span>
                 </p>
             </div>
             </form>

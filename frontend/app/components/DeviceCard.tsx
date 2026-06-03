@@ -19,18 +19,19 @@ import { formatDistanceToNow } from 'date-fns';
 
 interface DeviceCardProps {
   device: Device;
-  onUpdate: () => void;
+  onUpdate: (deviceId: string, newStatus: DeviceStatus) => void; // Changed to accept device update
 }
 
 export default function DeviceCard({ device, onUpdate }: DeviceCardProps) {
   const [updating, setUpdating] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [localDevice, setLocalDevice] = useState<Device>(device); // Add local state
 
   const getStatusConfig = () => {
-    if (device.is_stale) {
+    if (localDevice.is_stale) {
       return { color: 'text-red-400', bg: 'bg-red-400/10', border: 'border-red-400/20', label: 'Stale' };
     }
-    switch (device.last_status) {
+    switch (localDevice.last_status) {
       case DeviceStatus.ONLINE:
         return { color: 'text-green-400', bg: 'bg-green-400/10', border: 'border-green-400/20', label: 'Online' };
       case DeviceStatus.OFFLINE:
@@ -43,8 +44,8 @@ export default function DeviceCard({ device, onUpdate }: DeviceCardProps) {
   };
 
   const getStatusIcon = () => {
-    if (device.is_stale) return <Power size={14} />;
-    switch (device.last_status) {
+    if (localDevice.is_stale) return <Power size={14} />;
+    switch (localDevice.last_status) {
       case DeviceStatus.ONLINE: return <Wifi size={14} />;
       case DeviceStatus.OFFLINE: return <Power size={14} />;
       case DeviceStatus.DEGRADED: return <AlertTriangle size={14} />;
@@ -54,10 +55,26 @@ export default function DeviceCard({ device, onUpdate }: DeviceCardProps) {
 
   const updateStatus = async (status: DeviceStatus) => {
     setUpdating(true);
+    
+    // Optimistic update - update UI immediately
+    const oldStatus = localDevice.last_status;
+    setLocalDevice({
+      ...localDevice,
+      last_status: status,
+      last_report_timestamp: new Date().toISOString(),
+      is_stale: false
+    });
+    
     try {
-      await deviceApi.submitStatusReport(device.id, status, `Status updated to ${status}`);
-      onUpdate();
+      await deviceApi.submitStatusReport(localDevice.id, status, `Status updated to ${status}`);
+      // Notify parent to update stats without refetching all devices
+      onUpdate(localDevice.id, status);
     } catch (error) {
+      // Revert on error
+      setLocalDevice({
+        ...localDevice,
+        last_status: oldStatus
+      });
       console.error('Failed to update status:', error);
     } finally {
       setUpdating(false);
@@ -66,8 +83,8 @@ export default function DeviceCard({ device, onUpdate }: DeviceCardProps) {
   };
 
   const statusConfig = getStatusConfig();
-  const lastReportTime = device.last_report_timestamp
-    ? formatDistanceToNow(new Date(device.last_report_timestamp), { addSuffix: true })
+  const lastReportTime = localDevice.last_report_timestamp
+    ? formatDistanceToNow(new Date(localDevice.last_report_timestamp), { addSuffix: true })
     : 'Never';
 
   return (
@@ -75,11 +92,11 @@ export default function DeviceCard({ device, onUpdate }: DeviceCardProps) {
       <div className="p-6">
         {/* Header */}
         <div className="flex justify-between items-start mb-4">
-          <Link href={`/device/${device.id}`} className="flex-1">
+          <Link href={`/device/${localDevice.id}`} className="flex-1">
             <h3 className="text-lg font-semibold text-white group-hover:text-primary transition-colors duration-200">
-              {device.name}
+              {localDevice.name}
             </h3>
-            <p className="text-sm text-gray-500 mt-1">{device.device_type}</p>
+            <p className="text-sm text-gray-500 mt-1">{localDevice.device_type}</p>
           </Link>
           
           <div className="relative">
@@ -110,17 +127,17 @@ export default function DeviceCard({ device, onUpdate }: DeviceCardProps) {
 
         {/* Details */}
         <div className="space-y-2 text-sm">
-          {device.ip_address && (
+          {localDevice.ip_address && (
             <div className="flex items-center gap-2 text-gray-500">
               <Globe size={14} className="text-primary" />
-              <span>{device.ip_address}</span>
+              <span>{localDevice.ip_address}</span>
             </div>
           )}
           
-          {device.location && (
+          {localDevice.location && (
             <div className="flex items-center gap-2 text-gray-500">
               <MapPin size={14} className="text-primary" />
-              <span>{device.location}</span>
+              <span>{localDevice.location}</span>
             </div>
           )}
           
@@ -133,7 +150,7 @@ export default function DeviceCard({ device, onUpdate }: DeviceCardProps) {
         {/* Footer */}
         <div className="mt-6 pt-4 border-t border-gray-800 flex gap-3">
           <Link
-            href={`/device/${device.id}`}
+            href={`/device/${localDevice.id}`}
             className="flex-1 text-center text-primary hover:text-primary-light text-sm font-medium transition-colors duration-200 flex items-center justify-center gap-1"
           >
             View Details

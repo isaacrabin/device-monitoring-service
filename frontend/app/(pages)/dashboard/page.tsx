@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { deviceApi } from '@/app/services/api';
-import { Device, DeviceStatus, DeviceType } from '@/app/types';
+import { Device, DeviceStatus } from '@/app/types';
 import DeviceCard from '@/app/components/DeviceCard';
 import { 
   Network, 
@@ -41,6 +41,23 @@ export default function Dashboard() {
       setLoading(false);
     }
   };
+
+  // Handle device update without refetching all devices
+  const handleDeviceUpdate = useCallback((deviceId: string, newStatus: DeviceStatus) => {
+    setDevices(prevDevices => 
+      prevDevices.map(device => 
+        device.id === deviceId 
+          ? { 
+              ...device, 
+              last_status: newStatus, 
+              last_report_timestamp: new Date().toISOString(),
+              is_stale: false 
+            }
+          : device
+      )
+    );
+    setLastUpdated(new Date());
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -82,13 +99,11 @@ export default function Dashboard() {
           {/* Logout Button - Top Right */}
           <div className="absolute top-6 right-6 z-10">
             <div className="flex items-center gap-3">
-              {/* User Info */}
               <div className="flex items-center gap-2 bg-dark-200/80 backdrop-blur-sm rounded-lg px-3 py-2 border border-gray-700">
                 <User size={16} className="text-primary" />
                 <span className="text-sm text-gray-300">{user?.username || 'Admin'}</span>
               </div>
               
-              {/* Logout Button */}
               <button
                 onClick={handleLogout}
                 className="flex items-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 px-4 py-2 rounded-lg transition-all duration-200 border border-red-500/20 hover:border-red-500/40"
@@ -182,7 +197,11 @@ export default function Dashboard() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {devices.map((device) => (
-              <DeviceCard key={device.id} device={device} onUpdate={fetchDevices} />
+              <DeviceCard 
+                key={device.id} 
+                device={device} 
+                onUpdate={handleDeviceUpdate} 
+              />
             ))}
           </div>
         )}
