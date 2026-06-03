@@ -1,0 +1,12 @@
+.git
+.gitignore
+ReadMe.md
+.mvn
+.mvn/wrapper
+target/
+*.log
+.DS_Store
+*.iml
+.idea/
+.vscode/
+logs/

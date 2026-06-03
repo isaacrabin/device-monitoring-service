@@ -1,0 +1,98 @@
+spring:
+  application:
+    name: "device-monitoring-service"
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/device_monitoring}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:password}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+
+  jpa:
+    hibernate:
+      ddl-auto: none  # Flyway handles schema
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          batch_size: 20
+        format_sql: false
+    show-sql: false
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 0
+    locations: classpath:db/migration
+    validate-on-migrate: true
+
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    default-property-inclusion: non_null
+
+server:
+  port: 8080
+  error:
+    include-message: never
+    include-binding-errors: never
+
+logging:
+  level:
+    org.rabin.devicemonitoringservice: DEBUG
+    org.flywaydb: DEBUG
+    org.springframework.web: INFO
+    org.hibernate: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,info,flyway
+  endpoint:
+    health:
+      show-details: always
+    flyway:
+      enabled: true
+
+monitoring:
+  staleness:
+    threshold-minutes: 15
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      deviceService:
+        sliding-window-size: 20
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 30s
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+  retry:
+    instances:
+      deviceService:
+        max-attempts: 3
+        wait-duration: 1s
+        retry-exceptions:
+          - org.springframework.dao.DataAccessException
+          - java.net.SocketTimeoutException
+  bulkhead:
+    instances:
+      deviceService:
+        max-concurrent-calls: 20
+        max-wait-duration: 10ms
+  thread-pool-bulkhead:
+    instances:
+      deviceService:
+        max-thread-pool-size: 10
+        core-thread-pool-size: 5
+        queue-capacity: 20
+  timelimiter:
+    instances:
+      deviceService:
+        timeout-duration: 5s
