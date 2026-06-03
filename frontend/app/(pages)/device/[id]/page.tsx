@@ -34,6 +34,12 @@ export default function DeviceDetailPage() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
+  const STATUS_LABELS: Record<number, string> = {
+    3: 'ONLINE',
+    2: 'DEGRADED',
+    1: 'OFFLINE',
+  };
+
   const fetchDeviceDetails = async () => {
     try {
       const data = await deviceApi.getDeviceDetails(id as string);
@@ -116,7 +122,7 @@ export default function DeviceDetailPage() {
             <div>
               <div className="flex items-center gap-3 mb-4">
                 <h1 className="text-3xl font-bold">{device?.device.name}</h1>
-                <StatusBadge status={device.last_status} isStale={device?.device.is_stale} size="lg" />
+                <StatusBadge status={device?.device.last_status} isStale={device?.device.is_stale} size="lg" />
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
@@ -171,11 +177,30 @@ export default function DeviceDetailPage() {
               <CartesianGrid strokeDasharray="3 3" stroke="#333" />
               <XAxis dataKey="time" stroke="#888" />
               <YAxis stroke="#888" />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#1a1a1a', 
-                  border: '1px solid #ff6900',
-                  borderRadius: '8px'
+              <Tooltip
+                content={({ active, payload, label }) => {
+                  if (!active || !payload || !payload.length) return null;
+
+                  const statusValue = payload[0].value as number;
+
+                  return (
+                    <div
+                      style={{
+                        backgroundColor: '#1a1a1a',
+                        border: '1px solid #ff6900',
+                        borderRadius: '8px',
+                        padding: '10px',
+                      }}
+                    >
+                      <p className="text-sm text-gray-300">
+                        <strong>Time:</strong> {label}
+                      </p>
+
+                      <p className="text-sm text-gray-300">
+                        <strong>Status:</strong> {STATUS_LABELS[statusValue] ?? 'UNKNOWN'}
+                      </p>
+                    </div>
+                  );
                 }}
               />
               <Line type="monotone" dataKey="status" stroke="#ff6900" strokeWidth={2} dot={{ fill: '#ff6900' }} />
